@@ -1,0 +1,53 @@
+body {
+  padding: 20px;
+}
+
+#code, #playarea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#code > div,
+#playarea > div {
+  width: 600px;
+  position: relative;
+}
+
+textarea {
+  width: 100%;
+  height: 500px;
+  resize: none;
+  padding: 10px;
+  font-family: Consolas, 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+textarea#error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #f00;
+  background-color: transparent;
+  border: none;
+}
+
+.button-panel {
+  display: flex;
+  flex-direction: row;
+}
+
+.button-panel > div {
+  flex: 1;
+}
+
+.button-panel > div:last-of-type {
+  /* margin-left: auto; */
+  text-align: right;
+}
+
+.reverseRange {
+  direction: rtl;
+}
