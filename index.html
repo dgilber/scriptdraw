@@ -19,7 +19,7 @@
 <body>
   <form id="code">
     <div>
-      <textarea id="editor"></textarea>
+      <textarea id="editor" spellcheck="false"></textarea>
     </div>
     <div class="button-panel">
       <div class="left">
@@ -35,17 +35,20 @@
   <form id="playarea" style="display: none;">
   <!-- <form id="playarea"> -->
     <div>
-      <canvas id="canvas" width=600 height=500></canvas>
+      <canvas id="canvas" width="600" height="500"></canvas>
       <textarea id="error" readonly></textarea>
     </div>
     <div class="button-panel">
-      <div class="left-bak">
+      <div>
         <button type="button" id="back" title="Backspace">&#9664; Back</button>
       </div>
-      <div class="center-bak">
-        <input type="range" id="speed" min="0" max="1000" step="10" class="reverseRange" title="speed" />
+      <div style="text-align: center;">
+        <label>
+          <input type="range" id="speed" min="0" max="500" step="10" class="reverseRange" title="speed" />
+          Speed
+        </label>
       </div>
-      <div class="right-bak">
+      <div>
         <button type="button" id="stop" title="Ctrl-Q">Stop &#x23F9;</button>
         <button type="button" id="replay" title="Ctrl-R" style="display: none;">Replay &#9654;</button>
       </div>
