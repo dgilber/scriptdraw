@@ -6,14 +6,17 @@ let errorEl;
 let canvasEl;
 let ctx;
 
+function saveCode() {
+  localStorage['code'] = $('#editor').val();
+}
+
 function run() {
-  reset_canvas();
   let code = $('#editor').val();
-  $('#error').val('').hide()
+  $('#error').val('')
   $('#code').hide()
   $('#playarea').show();
   try {
-    localStorage['code'] = code;
+    reset_canvas();
     execute(code);
   } catch (err) {
     $('#error').val(err.message);
@@ -28,6 +31,7 @@ function back() {
 function reset_canvas() {
   // ctx.scale = 1;
   ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+  ctx.beginPath();
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
   ctx.lineWidth = 1;
@@ -70,9 +74,25 @@ const canvasFunctions = {
       ctx.strokeRect(x - .5, y - .5, w, h);
     }
   },
-  ellipse: function (x, y, w, h, start = 0, end = 2 * Math.PI, rotation = 0) {
-    ctx.ellipse(x, y, w / 2, y / 2, rotation, start, end);
+  ellipse: function (x, y, w, h, start = 0, end = 2, rotation = 0) {
+    ctx.ellipse(x, y, w / 2, h / 2, rotation * Math.PI, start * Math.PI, end * Math.PI);
     ctx.stroke();
+  },
+  shape: function (coords) {
+    coord = arguments;
+    if (coord.length % 2 == 1) {
+      throw new Error("mismatch coordinate pair");
+    }
+    if (coord.length < 4) {
+      return;
+    }
+    ctx.beginPath();
+    ctx.moveTo(coord[0] + .5, coord[1] + .5);
+    for (var i = 2; i < coord.length; i += 2) {
+      ctx.lineTo(coord[i] + .5, coord[i + 1] + .5);
+    }
+    ctx.stroke();
+    ctx.closePath()
   },
   fill: function () {
     ctx.fill();
@@ -96,7 +116,7 @@ function execute(code) {
         throw new Error(`Function not found: ${name}\n  line ${i}`);
       }
       // TODO - fix corners cut here!
-      let args = match[2].split(/\s*,\s*/).map(s => parseInt(s))
+      let args = match[2].split(/\s*,\s*/).map(s => parseFloat(s))
       console.log(name, args);
       canvasFunctions[name].apply(this, args);
     }
