@@ -19,7 +19,7 @@ function run() {
     reset_canvas();
     execute(code);
   } catch (err) {
-    $('#error').val(err.message);
+    $('#error').val(err);
   }
 }
 
@@ -74,13 +74,13 @@ const canvasFunctions = {
       ctx.strokeRect(x - .5, y - .5, w, h);
     }
   },
-  ellipse: function (x, y, w, h, start = 0, end = 2, rotation = 0) {
-    ctx.ellipse(x, y, w / 2, h / 2, rotation * Math.PI, start * Math.PI, end * Math.PI);
+  ellipse: function (x, y, w, h, start = 0, end = 2 * Math.PI, rotation = 0) {
+    ctx.ellipse(x, y, w / 2, h / 2, rotation, start, end);
     ctx.stroke();
   },
   shape: function (coords) {
-    coord = arguments;
-    if (coord.length % 2 == 1) {
+    let coord = arguments;
+    if (coord.length % 2 === 1) {
       throw new Error("mismatch coordinate pair");
     }
     if (coord.length < 4) {
@@ -88,7 +88,7 @@ const canvasFunctions = {
     }
     ctx.beginPath();
     ctx.moveTo(coord[0] + .5, coord[1] + .5);
-    for (var i = 2; i < coord.length; i += 2) {
+    for (let i = 2; i < coord.length; i += 2) {
       ctx.lineTo(coord[i] + .5, coord[i + 1] + .5);
     }
     ctx.stroke();
@@ -102,25 +102,37 @@ const canvasFunctions = {
 
 
 function execute(code) {
-  let regex = /^(\w+)\s*\((.*)\)$/
-  let lines = code.split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i].trim();
-    if (line !== '') {
-      let match = regex.exec(line);
-      if (!match) {
-        throw new Error(`Invalid syntax: ${line}\n  line ${i}`);
-      }
-      let name = match[1];
-      if (!canvasFunctions[name]) {
-        throw new Error(`Function not found: ${name}\n  line ${i}`);
-      }
-      // TODO - fix corners cut here!
-      let args = match[2].split(/\s*,\s*/).map(s => parseFloat(s))
-      console.log(name, args);
-      canvasFunctions[name].apply(this, args);
+  // TODO - scan for variable assignments without const, let or var.
+  let saferCode = `
+    "use strict";
+    ${code}
+  `;
+  // Using `with` and `eval` is only acceptable because
+  // this is a non-commercial, private application.
+  with(Math) {
+    with(canvasFunctions) {
+      eval(saferCode);
     }
   }
+  // let regex = /^(\w+)\s*\((.*)\)$/
+  // let lines = code.split('\n');
+  // for (let i = 0; i < lines.length; i++) {
+  //   let line = lines[i].trim();
+  //   if (line !== '') {
+  //     let match = regex.exec(line);
+  //     if (!match) {
+  //       throw new Error(`Invalid syntax: ${line}\n  line ${i}`);
+  //     }
+  //     let name = match[1];
+  //     if (!canvasFunctions[name]) {
+  //       throw new Error(`Function not found: ${name}\n  line ${i}`);
+  //     }
+  //     // TODO - fix corners cut here!
+  //     let args = match[2].split(/\s*,\s*/).map(s => parseFloat(s))
+  //     console.log(name, args);
+  //     canvasFunctions[name].apply(this, args);
+  //   }
+  // }
 }
 
 function init() {
